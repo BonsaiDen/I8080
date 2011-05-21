@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "cpu.h"
 
+
 /* Lookups ------------------------------------------------------------------ */
 static const unsigned int ParityTable256[256] = {
 #   define P2(n) n, n^1, n^1, n
@@ -12,12 +13,20 @@ static const unsigned int ParityTable256[256] = {
 
 
 /* 16 bit helpers ----------------------------------------------------------- */
-static inline uint16_t read16(uint8_t *value) {
-    return (*(uint16_t*)value << 8) | (*(uint16_t*)value >> (16 - 8));
+static inline uint16_t read16(uint8_t *mem) {
+    return *mem << 8 | *(mem + 1); 
+    // TODO implement page protection
+
+//    return (*(uint16_t*)value << 8) | (*(uint16_t*)value >> (16 - 8));
+}
+
+static inline void write16(uint8_t *mem, uint16_t *r) {
+    *mem = *r >> 8;
+    *(mem + 1) = *r & 0xff;
 }
 
 
-/* flag helpers ------------------------------------------------------------- */
+/* Flag helpers ------------------------------------------------------------- */
 static inline void check_szap_inc(CPU *c, uint16_t *r) {
 
     (*c->F) = 0; // clear flags

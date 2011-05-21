@@ -47,11 +47,9 @@ static void LDAX_D(CPU *c, uint8_t *mem) {
 // Memory
 static void LHLD(CPU *c, uint8_t *mem) {
 
-    // TODO implement page protection
-    uint16_t p = read16(mem);
-
     // use c->mem here bcause *mem is offseted with the PC
-    *c->HL = c->mem[p] << 8 | c->mem[p + 1]; 
+    uint16_t p = read16(mem);
+    *c->HL = read16(&c->mem[p]);
 
 }
 
@@ -69,12 +67,9 @@ static void STAX_D(CPU *c, uint8_t *mem) {
 // Memory
 static void SHLD(CPU *c, uint8_t *mem) {
     
-    // TODO implement page protection
-    uint16_t p = read16(mem);
-
     // use c->mem here bcause *mem is offseted with the PC
-    c->mem[p] = (*c->HL) >> 8;
-    c->mem[p + 1] = (*c->HL) & 0xff;
+    uint16_t p = read16(mem);
+    write16(&c->mem[p], c->HL);
 
 }
 

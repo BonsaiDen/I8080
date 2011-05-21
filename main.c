@@ -10,8 +10,7 @@
 
 int main(int argc, const char *argv[]) {
     
-//    uint8_t *mem = calloc(sizeof(uint8_t), 65536);
-    
+    // load from mem, and do some stuff
     uint8_t mem[65536] = {
         LHLD, 0, 100,
 
@@ -32,12 +31,7 @@ int main(int argc, const char *argv[]) {
     mem[101] = 255;
 
     CPU *core = cpu(mem);
-
-
-
     core->run(core);
-
-//    free(mem);
     free(core);
     return 0;
 }

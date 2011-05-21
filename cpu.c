@@ -7,9 +7,13 @@
 #include "helpers.c"
 #include "map.c"
 
-static void run(CPU *cpu);
-static void dump(CPU *cpu);
 
+/* Definitions -------------------------------------------------------------- */
+static void run(CPU *cpu);
+static void dump(CPU *cpu, uint8_t inst);
+
+
+/* Constructor -------------------------------------------------------------- */
 CPU *cpu(uint8_t *mem) {
     
     CPU *cpu = calloc(1, sizeof(CPU));
@@ -35,6 +39,8 @@ CPU *cpu(uint8_t *mem) {
 
 }
 
+
+/* Control ------------------------------------------------------------------ */
 static void run(CPU *c) {
 
     while(1) {
@@ -45,8 +51,6 @@ static void run(CPU *c) {
             printf("invalid op code: %d\n", *inst);
             break;
         }
-
-        printf("op: %d\n", *inst);
         
         // resolve op code function pointer...
         opCode *func = (opCode*)&OP_CODES[*inst * 3 + 2];
@@ -63,7 +67,7 @@ static void run(CPU *c) {
             break;
         }
 
-        dump(c);
+        dump(c, *inst);
         usleep(1000000);
 
     }
@@ -72,20 +76,21 @@ static void run(CPU *c) {
 
 
 /* Debugging ---------------------------------------------------------------- */
-static void dump(CPU *cpu) {
+static void dump(CPU *cpu, uint8_t inst) {
 
     uint8_t flags = *cpu->F;
 
-    printf("  (F) %c %c %c %c %c %c %c %c\n\n", (flags & 128) ? 'S' : '-',
-                           (flags &  64) ? 'Z' : '-',
-                           (flags &  32) ? '0' : ' ',
-                           (flags &  16) ? 'A' : '-',
-                           (flags &   8) ? '0' : ' ',
-                           (flags &   4) ? 'P' : '-',
-                           (flags &   2) ? '1' : ' ',
-                           (flags &   1) ? 'C' : '-' );
+    printf("\n  (F) %c %c %c %c %c %c %c %c\n", 
+                (flags & 128) ? 'S' : '-',
+                (flags &  64) ? 'Z' : '-',
+                (flags &  32) ? '0' : ' ',
+                (flags &  16) ? 'A' : '-',
+                (flags &   8) ? '0' : ' ',
+                (flags &   4) ? 'P' : '-',
+                (flags &   2) ? '1' : ' ',
+                (flags &   1) ? 'C' : '-' );
 
-    printf("  (A)   %03d (PSW) %05d\n", *cpu->A, *cpu->PSW);
+    printf("  (A)   %03d (PSW) %05d  (OP)     %02x\n", *cpu->A, *cpu->PSW, inst);
     printf("  (B)   %03d   (C)   %03d  (BC)  %05d\n", *cpu->B, *cpu->C, *cpu->BC);
     printf("  (D)   %03d   (E)   %03d  (DE)  %05d\n", *cpu->D, *cpu->E, *cpu->DE);
     printf("  (H)   %03d   (L)   %03d  (HL)  %05d\n", *cpu->H, *cpu->L, *cpu->HL);
@@ -93,4 +98,6 @@ static void dump(CPU *cpu) {
     printf("(CYC) %17lu\n", cpu->cycles);
 
 //    fputs("\x1b[2J", stdout);
+//
 }
+
