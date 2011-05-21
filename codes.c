@@ -1,5 +1,6 @@
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "cpu.h"
 
 /* Op Codes ----------------------------------------------------------------- */
@@ -43,6 +44,18 @@ static void LDAX_D(CPU *c, uint8_t *mem) {
 }
 
 
+// Memory
+static void LHLD(CPU *c, uint8_t *mem) {
+
+    // TODO implement page protection
+    uint16_t p = read16(mem);
+
+    // use c->mem here bcause *mem is offseted with the PC
+    *c->HL = c->mem[p] << 8 | c->mem[p + 1]; 
+
+}
+
+
 /* Store -------------------------------------------------------------------- */
 static void STAX_B(CPU *c, uint8_t *mem) {
     *c->BC = *c->A;
@@ -50,6 +63,43 @@ static void STAX_B(CPU *c, uint8_t *mem) {
 
 static void STAX_D(CPU *c, uint8_t *mem) {
     *c->DE = *c->A;
+}
+
+
+// Memory
+static void SHLD(CPU *c, uint8_t *mem) {
+    
+    // TODO implement page protection
+    uint16_t p = read16(mem);
+
+    // use c->mem here bcause *mem is offseted with the PC
+    c->mem[p] = (*c->HL) >> 8;
+    c->mem[p + 1] = (*c->HL) & 0xff;
+
+}
+
+// just here to make gcc compile
+static void DAA(CPU *c, uint8_t *mem) {
+    
+}
+
+static void STA(CPU *c, uint8_t *mem) {
+    
+}
+
+static void STC(CPU *c, uint8_t *mem) {
+    
+}
+
+static void LDA(CPU *c, uint8_t *mem) {
+    
+}
+
+static void CMC(CPU *c, uint8_t *mem) {
+    
+}
+static void CMA(CPU *c, uint8_t *mem) {
+    
 }
 
 

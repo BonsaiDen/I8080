@@ -6,6 +6,7 @@
 #define op (unsigned int)&
 typedef void (*opCode)(CPU *c, uint8_t *mem);
 
+
 // byte size and min cycle length for op codes
 static unsigned int OP_CODES[768] = {
 
@@ -68,7 +69,7 @@ static unsigned int OP_CODES[768] = {
     2,   7,  op MVI_H,
     1,   4,  op DAA,
 
-    // 27 - 2f
+    // 28 - 2f
     1,   4,  op NOP,
     1,  10,  op DAD_H,
     3,  16,  op LHLD,
@@ -92,7 +93,7 @@ static unsigned int OP_CODES[768] = {
     2,  10,  op MVI_M,
     1,   4,  op STC,
 
-    // 37 - 3f
+    // 38 - 3f
     1,   4,  op NOP,
     1,  10,  op DAD_SP,
     3,  13,  op LDA,

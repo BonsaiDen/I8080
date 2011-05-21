@@ -1,54 +1,73 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 
 #include "cpu.h"
 
 #include "helpers.c"
 #include "map.c"
 
-
+static void run(CPU *cpu);
 static void dump(CPU *cpu);
 
-int main(int argc, const char *argv[]) {
+CPU *cpu(uint8_t *mem) {
     
-    CPU *core = cpu();
+    CPU *cpu = calloc(1, sizeof(CPU));
 
-    uint8_t *mem = calloc(sizeof(uint8_t), 65536);
-    (*core->HL) = 32768;
-    (*core->BC) = 32768;
-    mem[0] = 9;
-
-    dump(core);
+    cpu->A = (uint8_t*)&cpu->reg[1]; cpu->F = (uint8_t*)&cpu->reg[0];
+    cpu->B = (uint8_t*)&cpu->reg[3]; cpu->C = (uint8_t*)&cpu->reg[2];
+    cpu->D = (uint8_t*)&cpu->reg[5]; cpu->E = (uint8_t*)&cpu->reg[4];
+    cpu->H = (uint8_t*)&cpu->reg[7]; cpu->L = (uint8_t*)&cpu->reg[6];
     
+    cpu->PSW = (uint16_t*)&cpu->reg[0];
+    cpu->BC = (uint16_t*)&cpu->reg[2];
+    cpu->DE = (uint16_t*)&cpu->reg[4];
+    cpu->HL = (uint16_t*)&cpu->reg[6];
+
+    cpu->SP = (uint16_t*)&cpu->reg[8]; 
+    cpu->PC = (uint16_t*)&cpu->reg[10];
+
+    cpu->cycles = 0;
+    cpu->mem = mem;
+    cpu->run = &run;
+
+    return cpu;
+
+}
+
+static void run(CPU *c) {
+
     while(1) {
 
-        uint8_t *inst = &mem[(*core->PC)++]; // fetch op code and increase PC by 1
+        // fetch op code and increase PC by 1
+        uint8_t *inst = &c->mem[(*c->PC)++]; 
+        if (*inst > 255) {
+            printf("invalid op code: %d\n", *inst);
+            break;
+        }
+
         printf("op: %d\n", *inst);
         
         // resolve op code function pointer...
         opCode *func = (opCode*)&OP_CODES[*inst * 3 + 2];
-        (*func)(core, &mem[(*core->PC)]); 
+        (*func)(c, &c->mem[(*c->PC)]); 
 
         // increase PC by op size - 1
-        (*core->PC) += (OP_CODES[*inst * 3] - 1); 
+        (*c->PC) += (OP_CODES[*inst * 3] - 1); 
 
         // add min  cycle count
-        core->cycles += OP_CODES[*inst * 3 + 1]; 
+        c->cycles += OP_CODES[*inst * 3 + 1]; 
 
+        // exit on NOP
         if (*inst == 0) {
             break;
         }
 
-        dump(core);
+        dump(c);
         usleep(1000000);
 
     }
-
-    free(mem);
-    free(core);
-    return 0;
+    
 }
 
 
@@ -75,4 +94,3 @@ static void dump(CPU *cpu) {
 
 //    fputs("\x1b[2J", stdout);
 }
-
