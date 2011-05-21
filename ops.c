@@ -37,18 +37,44 @@ static void CMC() {
 // ----------------------------------------------------------------------------
 
 static void RLC() {
-    // reg C left, check carry...
-}
 
-static void RRC() {
-    // reg C right
+    // rotate left ignoring F carry
+    uint8_t carry = (*CPU->A) & 128 ? 1 : 0; // check msb of A
+    *CPU->A = ((*CPU->A) << 1) + carry;
+    *CPU->F = ((*CPU->F) & ~1) | carry; // set new carry
+
 }
 
 static void RAL() {
-    // reg A left
+
+    // rotate A left dropping MSB in favor fo F carry
+    uint8_t carry_in   = (*CPU->F) &   1 ? 1 : 0; // check carry flag
+    uint8_t carry_out  = (*CPU->A) & 128 ? 1 : 0; // check msb of A
+
+    *CPU->A = ((*CPU->A) << 1) + carry_in;
+    *CPU->F = ((*CPU->F) & ~1) | carry_out; // set new carry
+
+}
+
+static void RRC() {
+
+    // rotate A right ignoring F carry
+    uint8_t carry_in   = (*CPU->A) & 1 ? 128 : 0; // check for msb of A
+    uint8_t carry_out  = (*CPU->A) & 1 ?   1 : 0; // check for lsb of A
+
+    *CPU->A = ((*CPU->A) >> 1) + carry_in;
+    *CPU->F = ((*CPU->F) & ~1) | carry_out; // set new carry
+
 }
 
 static void RAR() {
-    // reg A right
+
+    // rotate A left dropping LSB in favor fo F carry
+    uint8_t carry_in   = (*CPU->F) & 1 ? 128 : 0; // check for carry flag
+    uint8_t carry_out  = (*CPU->A) & 1 ?   1 : 0; // check for lsb of A
+
+    *CPU->A = ((*CPU->A) >> 1) + carry_in;
+    *CPU->F = ((*CPU->F) & ~1) | carry_out; // set new carry
+
 }
 

@@ -199,7 +199,30 @@ unsigned int OP_CODES[768] = {
     1,   7,  op MOV_A_M,
     1,   5,  op MOV_A_A,
 
+    /*
+    // 80 - 87
+    1,   4,  op ADD_B,
+    1,   4,  op ADD_C,
+    1,   4,  op ADD_D,
+    1,   4,  op ADD_E,
 
+    1,   4,  op ADD_H,
+    1,   4,  op ADD_L,
+    1,   7,  op ADD_M,
+    1,   4,  op ADD_A,
+
+    // 88 - 8f
+    1,   4,  op ADC_B,
+    1,   4,  op ADC_C,
+    1,   4,  op ADC_D,
+    1,   4,  op ADC_E,
+
+    1,   4,  op ADC_H,
+    1,   4,  op ADC_L,
+    1,   7,  op ADC_M,
+    1,   4,  op ADC_A,
+
+    */
     // up next
     // ADD
     // SUB

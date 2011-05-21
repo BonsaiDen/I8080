@@ -52,8 +52,6 @@ void cpu_step() {
     *CPU->PC &= 0xffff;
 
     CPU->cycles += OP_CODES[*inst * 3 + 1]; // add min  cycle count 
-
-    usleep(1000000);
     
 }
 
@@ -70,7 +68,7 @@ inline cpu_flag_szap_inc(uint16_t *r) {
     
     (*CPU->F) = 0; // clear flags
 
-    if (!(*r & 128))           (*CPU->F) |= 128; // set SIGN flag
+    if ((*r & 128))            (*CPU->F) |= 128; // set SIGN flag
     if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
     if (!(*r & 15 && *r & 31)) (*CPU->F) |=  16; // set AUXILLARY CARRY flag
     if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
