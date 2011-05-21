@@ -12,34 +12,43 @@ static void HLT() {
     (*CPU->PC)--;
 }
 
-static void DAA(uint8_t *mem) {
-    
+
+// Special Accumulator and Flags Instructions ---------------------------------
+// ----------------------------------------------------------------------------
+
+static void DAA() {
+    (*CPU->F) = 0; // reset flags
 }
 
-static void STC(uint8_t *mem) {
-    
+static void CMA() {
+    *CPU->A = ~*CPU->A; // not A
 }
 
-static void CMC(uint8_t *mem) {
-    
-}
-static void CMA(uint8_t *mem) {
-    
+static void STC() {
+    (*CPU->F) |= 1; // set carry
 }
 
-static void RLC(uint8_t *mem) {
+static void CMC() {
+    (*CPU->F) ^= 1; // not carry TODO is this correct?
+}
+
+
+// Rotate Operations ----------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+static void RLC() {
     // reg C left, check carry...
 }
 
-static void RRC(uint8_t *mem) {
+static void RRC() {
     // reg C right
 }
 
-static void RAL(uint8_t *mem) {
+static void RAL() {
     // reg A left
 }
 
-static void RAR(uint8_t *mem) {
+static void RAR() {
     // reg A right
 }
 

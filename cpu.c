@@ -5,8 +5,6 @@
 #include "cpu.h"
 #include "ops.h"
 
-#include "inst_names.h"
-
 extern CPU_8080 *CPU;
 extern uint8_t *MEMORY;
 
@@ -37,34 +35,25 @@ CPU_8080 *cpu_create() {
 
 
 /* Main --------------------------------------------------------------------- */
-void cpu_run() {
+inline uint8_t *cpu_next() {
+    return &MEMORY[*CPU->PC];
+}
 
-    cpu_dump(0);
+void cpu_step() {
 
-    while(1) {
+    // fetch op code
+    uint8_t *inst = cpu_next();
+    (*CPU->PC)++; // increase PC
+    
+    OPC *func = (OPC*)&OP_CODES[*inst * 3 + 2]; // call op func
+    (*func)(); 
+    
+    *CPU->PC += (OP_CODES[*inst * 3] - 1); // increase PC by op size - 1
+    *CPU->PC &= 0xffff;
 
-        // fetch op code and increase PC by 1
-        uint8_t *inst = &MEMORY[(*CPU->PC)++]; 
-        if (*inst > 255) {
-            printf("invalid op code: %d\n", *inst);
-            break;
-        }
-        
-        OPC *func = (OPC*)&OP_CODES[*inst * 3 + 2]; // call op func
-        (*func)(); 
-        
-        (*CPU->PC) += (OP_CODES[*inst * 3] - 1); // increase PC by op size - 1
-        CPU->cycles += OP_CODES[*inst * 3 + 1]; // add min  cycle count 
+    CPU->cycles += OP_CODES[*inst * 3 + 1]; // add min  cycle count 
 
-        // exit on NOP
-        if (*inst == 0) {
-            break;
-        }
-
-        cpu_dump(*inst);
-        usleep(1000000);
-
-    }
+    usleep(1000000);
     
 }
 
@@ -94,35 +83,7 @@ inline void cpu_flag_szap_dec(uint16_t *r) {
 
     if (!(*r & 128))           (*CPU->F) |= 128; // set SIGN flag
     if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
-    if (!(*r & 7 && *r & 15))  (*CPU->F) |=  16; // set AUXILLARY CARRY flag
     if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
 
-}
-
-
-/* Debug -------------------------------------------------------------------- */
-void cpu_dump(uint8_t inst) {
-
-    uint8_t flags = *CPU->F;
-
-    printf("\n  (F) %c %c %c %c %c %c %c %c\n", 
-                (flags & 128) ? 'S' : '-',
-                (flags &  64) ? 'Z' : '-',
-                (flags &  32) ? '0' : ' ',
-                (flags &  16) ? 'A' : '-',
-                (flags &   8) ? '0' : ' ',
-                (flags &   4) ? 'P' : '-',
-                (flags &   2) ? '1' : ' ',
-                (flags &   1) ? 'C' : '-' );
-
-    printf("  (A)   %03d (PSW) %05d  (OP)  %-5s(%02x)\n", *CPU->A, *CPU->PSW, INST_NAMES[inst], inst);
-    printf("  (B)   %03d   (C)   %03d  (BC)  %05d\n", *CPU->B, *CPU->C, *CPU->BC);
-    printf("  (D)   %03d   (E)   %03d  (DE)  %05d\n", *CPU->D, *CPU->E, *CPU->DE);
-    printf("  (H)   %03d   (L)   %03d  (HL)  %05d\n", *CPU->H, *CPU->L, *CPU->HL);
-    printf(" (SP) %05d  (PC) %05d\n", *CPU->SP, *CPU->PC);
-    printf("(CYC) %17lu\n", CPU->cycles);
-
-//    fputs("\x1b[2J", stdout);
-//
 }
 

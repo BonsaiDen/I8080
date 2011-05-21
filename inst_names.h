@@ -92,8 +92,95 @@ const char *INST_NAMES[256] = {
     "INR_A",
     "DCR_A",
     "MVI_A",
-    "CMC"
+    "CMC",
+
+    // 40 - 47
+    "MOV_B_B",
+    "MOV_B_C",
+    "MOV_B_D",
+    "MOV_B_E",
+
+    "MOV_B_H",
+    "MOV_B_L",
+    "MOV_B_M",
+    "MOV_B_A",
+
+    // 48 - 4f
+    "MOV_C_B",
+    "MOV_C_C",
+    "MOV_C_D",
+    "MOV_C_E",
+        
+    "MOV_C_H",
+    "MOV_C_L",
+    "MOV_C_M",
+    "MOV_C_A",
+
+    // 50 - 57
+    "MOV_D_B",
+    "MOV_D_C",
+    "MOV_D_D",
+    "MOV_D_E",
+        
+    "MOV_D_H",
+    "MOV_D_L",
+    "MOV_D_M",
+    "MOV_D_A",
+
+    // 58 - 5f
+    "MOV_E_B",
+    "MOV_E_C",
+    "MOV_E_D",
+    "MOV_E_E",
+        
+    "MOV_E_H",
+    "MOV_E_L",
+    "MOV_E_M",
+    "MOV_E_A",
+    
+    // 60 - 67
+    "MOV_H_B",
+    "MOV_H_C",
+    "MOV_H_D",
+    "MOV_H_E",
+        
+    "MOV_H_H",
+    "MOV_H_L",
+    "MOV_H_M",
+    "MOV_H_A",
+
+    // 68 - 6f
+    "MOV_L_B",
+    "MOV_L_C",
+    "MOV_L_D",
+    "MOV_L_E",
+        
+    "MOV_L_H",
+    "MOV_L_L",
+    "MOV_L_M",
+    "MOV_L_A",
+
+    // 70 - 77
+    "MOV_M_B",
+    "MOV_M_C",
+    "MOV_M_D",
+    "MOV_M_E",
+
+    "MOV_M_H",
+    "MOV_M_L",
+    "HLT",
+    "MOV_M_A",
+
+    // 78 - 7f
+    "MOV_A_B",
+    "MOV_A_C",
+    "MOV_A_D",
+    "MOV_A_E",
+        
+    "MOV_A_H",
+    "MOV_A_L",
+    "MOV_A_M",
+    "MOV_A_A",
+
 };
-
-
 

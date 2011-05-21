@@ -107,7 +107,105 @@ unsigned int OP_CODES[768] = {
     1,   5,  op INR_A,
     1,   5,  op DCR_A,
     2,   7,  op MVI_A,
-    1,   4,  op CMC
+    1,   4,  op CMC,
+
+    // ---------------------- the next quarter is just moves... and halt!
+    
+    // 40 - 47
+    1,   5,  op MOV_B_B,
+    1,   5,  op MOV_B_C,
+    1,   5,  op MOV_B_D,
+    1,   5,  op MOV_B_E,
+                    
+    1,   5,  op MOV_B_H,
+    1,   5,  op MOV_B_L,
+    1,   7,  op MOV_B_M,
+    1,   5,  op MOV_B_A,
+
+    // 48 - 4f
+    1,   5,  op MOV_C_B,
+    1,   5,  op MOV_C_C,
+    1,   5,  op MOV_C_D,
+    1,   5,  op MOV_C_E,
+                    
+    1,   5,  op MOV_C_H,
+    1,   5,  op MOV_C_L,
+    1,   7,  op MOV_C_M,
+    1,   5,  op MOV_C_A,
+
+    // 50 - 57
+    1,   5,  op MOV_D_B,
+    1,   5,  op MOV_D_C,
+    1,   5,  op MOV_D_D,
+    1,   5,  op MOV_D_E,
+                    
+    1,   5,  op MOV_D_H,
+    1,   5,  op MOV_D_L,
+    1,   7,  op MOV_D_M,
+    1,   5,  op MOV_D_A,
+
+    // 58 - 5f
+    1,   5,  op MOV_E_B,
+    1,   5,  op MOV_E_C,
+    1,   5,  op MOV_E_D,
+    1,   5,  op MOV_E_E,
+                    
+    1,   5,  op MOV_E_H,
+    1,   5,  op MOV_E_L,
+    1,   7,  op MOV_E_M,
+    1,   5,  op MOV_E_A,
+    
+    // 60 - 67
+    1,   5,  op MOV_H_B,
+    1,   5,  op MOV_H_C,
+    1,   5,  op MOV_H_D,
+    1,   5,  op MOV_H_E,
+                    
+    1,   5,  op MOV_H_H,
+    1,   5,  op MOV_H_L,
+    1,   7,  op MOV_H_M,
+    1,   5,  op MOV_H_A,
+
+    // 68 - 6f
+    1,   5,  op MOV_L_B,
+    1,   5,  op MOV_L_C,
+    1,   5,  op MOV_L_D,
+    1,   5,  op MOV_L_E,
+                    
+    1,   5,  op MOV_L_H,
+    1,   5,  op MOV_L_L,
+    1,   7,  op MOV_L_M,
+    1,   5,  op MOV_L_A,
+
+    // 70 - 77
+    1,   7,  op MOV_M_B,
+    1,   7,  op MOV_M_C,
+    1,   7,  op MOV_M_D,
+    1,   7,  op MOV_M_E,
+
+    1,   7,  op MOV_M_H,
+    1,   7,  op MOV_M_L,
+    1,   7,  op HLT,
+    1,   7,  op MOV_M_A,
+
+    // 78 - 7f
+    1,   5,  op MOV_A_B,
+    1,   5,  op MOV_A_C,
+    1,   5,  op MOV_A_D,
+    1,   5,  op MOV_A_E,
+                    
+    1,   5,  op MOV_A_H,
+    1,   5,  op MOV_A_L,
+    1,   7,  op MOV_A_M,
+    1,   5,  op MOV_A_A,
+
+
+    // up next
+    // ADD
+    // SUB
+    // AND / XOR
+    // OR / CMP
+
 
 
 };

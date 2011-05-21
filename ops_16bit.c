@@ -10,8 +10,8 @@ extern CPU_8080 *CPU;
 
 
 // Read 16 REG ----------------------------------------------------------------
-#define LXI(REG, RE) static void LXI_##REG() { \
-    *CPU->RE = read16(*CPU->PC); \
+#define LXI(NAME, REG) static void LXI_##NAME() { \
+    *CPU->REG = read16(*CPU->PC); \
 }
 
 LXI(B, BC);
@@ -61,8 +61,8 @@ static void DAD_SP() {
 
 
 // Increment ------------------------------------------------------------------
-#define INX(REG, RE) static void INX_##REG(uint8_t *mem) { \
-    (*CPU->RE)++; \
+#define INX(NAME, REG) static void INX_##NAME() { \
+    (*CPU->REG)++; \
 }
 
 INX(B, BC);
@@ -72,8 +72,8 @@ INX(SP, SP);
 
 
 // Decrement ------------------------------------------------------------------
-#define DCX(REG, RE) static void DCX_##REG(uint8_t *mem) { \
-    (*CPU->RE)--; \
+#define DCX(NAME, REG) static void DCX_##NAME() { \
+    (*CPU->REG)--; \
 }
 
 DCX(B, BC);
