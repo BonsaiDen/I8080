@@ -4,9 +4,7 @@
 
 #include <stdint.h>
 
-
-/* Structs ------------------------------------------------------------------ */
-typedef struct CPU {
+typedef struct CPU_8080 {
 
     uint8_t reg[12];
 
@@ -29,16 +27,15 @@ typedef struct CPU {
     uint16_t *SP;
     uint16_t *PC;
 
-    uint8_t *mem;
     unsigned long cycles;
 
-    void (*run)(struct CPU *cpu);
+} CPU_8080;
 
-} CPU;
-
-
-/* Constructor -------------------------------------------------------------- */
-CPU *cpu(uint8_t *mem);
+CPU_8080 *cpu_create();
+inline cpu_flag_szap_inc(uint16_t *r);
+inline void cpu_flag_szap_dec(uint16_t *r);
+void cpu_dump(uint8_t inst);
+void cpu_run();
 
 #endif
 

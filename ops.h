@@ -1,14 +1,19 @@
 
-/* Mappings ----------------------------------------------------------------- */
+#ifndef OP_CODES_H
+#define OP_CODES_H
 
-#include "codes.c"
+#include <stdint.h>
+#include "ops.c"
+#include "ops_16bit.c"
+#include "ops_8bit.c"
+
+typedef void (*OPC)();
 
 #define op (unsigned int)&
-typedef void (*opCode)(CPU *c, uint8_t *mem);
 
 
-// byte size and min cycle length for op codes
-static unsigned int OP_CODES[768] = {
+// byte size /min cycle length / function
+unsigned int OP_CODES[768] = {
 
     // x0 - x7
     1,   4,  op NOP,
@@ -107,4 +112,6 @@ static unsigned int OP_CODES[768] = {
 
 };
 
+#undef op
+#endif
 
