@@ -5,11 +5,8 @@
 #include "cpu.h"
 #include "ops/data.h"
 
-#include <curses.h>
-
 extern CPU_8080 *CPU;
 extern uint8_t *MEMORY;
-extern WINDOW *mem_win;
 
 /* Create ------------------------------------------------------------------- */
 CPU_8080 *cpu_create() {
@@ -69,8 +66,6 @@ static const unsigned int ParityTable256[256] = {
 inline void cpu_flag_szap(uint8_t *r) {
     
     (*CPU->F) = 0; // clear flags
-
-//    wprintw(mem_win, "flags: %d\n", *r);
 
     // TODO double check these
     if (*r & 128)              (*CPU->F) |= 128; // set SIGN flag

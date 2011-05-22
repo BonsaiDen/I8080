@@ -37,5 +37,7 @@ inline void cpu_flag_szp(uint8_t *r);
 void cpu_step();
 uint8_t *cpu_next();
 
+extern CPU_8080 *CPU;
+
 #endif
 

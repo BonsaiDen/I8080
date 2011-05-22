@@ -40,12 +40,20 @@ int main(int argc, const char *argv[]) {
     MEMORY = calloc(65536, sizeof(uint8_t));
     uint8_t TEST[65536] = {
 
-        LHLD, 64, 0,
-        INR_L,
-        SHLD, 64, 0,
-        LXI_H, 0, 0,
-        LHLD, 64, 0,
+        MVI_A, 10, // loop counter
+        CPI, 0, // check if ourloop reached zero
+        JZ, 10, 0, // in case it does, jump out
+        DCR_A, // decrement A
+        JMP, 2, // jump back 
+
+        NOP,
+        NOP,
         HLT,
+
+        NOP,
+        NOP,
+        NOP,
+        NOP
 
     };
 
@@ -56,6 +64,7 @@ int main(int argc, const char *argv[]) {
     
     // Start CPU
     CPU = cpu_create();
+    *CPU->SP = 65535;
     run();
 
     // cleanup
@@ -71,16 +80,17 @@ int main(int argc, const char *argv[]) {
 
 static void run() {
 
-    *CPU->SP = 65535;
-
     int ch = 0;
-    int paused = 0;
+    int paused = 0, first = 1;
     while(1) {
             
         uint8_t inst = *cpu_next();
         if (!paused) {
-            wprintw(mem_win, "%-5s(%02x)\n", OP_CODE_NAMES[inst], inst);
-            cpu_step();
+            if (!first) {
+                wprintw(mem_win, "%-5s(%02x)\n", OP_CODE_NAMES[inst], inst);
+                cpu_step();
+                
+            }
             
             uint8_t flags = *CPU->F;
             wmove(cpu_win, 0, 0);
@@ -106,7 +116,8 @@ static void run() {
         wrefresh(cpu_win);
         wrefresh(mem_win);
 
-        usleep(1000000);
+        usleep(100000);
+        first = 0;
     
     }
     
