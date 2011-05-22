@@ -1,6 +1,6 @@
 // Bitwise Instructions -------------------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu.h"
+#include "../cpu/8080.h"
 
 
 // Rotate left ignoring F carry
@@ -47,13 +47,13 @@ ANA(B); ANA(C); ANA(D); ANA(E); ANA(H); ANA(L); ANA(A);
 
 // AND A with contents of (HL)
 static void ANA_M() {
-    *CPU->A &= read8(*CPU->HL); \
+    *CPU->A &= mmu_read(*CPU->HL); \
     cpu_flag_szp(CPU->A); \
 }
 
 // AND A with next BYTE
 static void ANI() {
-    *CPU->A &= read8(*CPU->PC); \
+    *CPU->A &= mmu_read(*CPU->PC); \
     cpu_flag_szp(CPU->A); \
 }
 
@@ -67,13 +67,13 @@ XRA(B); XRA(C); XRA(D); XRA(E); XRA(H); XRA(L); XRA(A);
 
 // XOR A with contents of (HL)
 static void XRA_M() {
-    *CPU->A ^= read8(*CPU->HL); \
+    *CPU->A ^= mmu_read(*CPU->HL); \
     cpu_flag_szp(CPU->A); \
 }
 
 // XOR A with next BYTE
 static void XRI() {
-    *CPU->A ^= read8(*CPU->PC); \
+    *CPU->A ^= mmu_read(*CPU->PC); \
     cpu_flag_szp(CPU->A); \
 }
 
@@ -87,13 +87,13 @@ ORA(B); ORA(C); ORA(D); ORA(E); ORA(H); ORA(L); ORA(A);
 
 // OR A with contents of (HL)
 static void ORA_M() {
-    *CPU->A |= read8(*CPU->HL); \
+    *CPU->A |= mmu_read(*CPU->HL); \
     cpu_flag_szp(CPU->A); \
 }
 
 // OR A with next BYTE
 static void ORI() {
-    *CPU->A |= read8(*CPU->PC); \
+    *CPU->A |= mmu_read(*CPU->PC); \
     cpu_flag_szp(CPU->A); \
 }
 

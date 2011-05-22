@@ -1,6 +1,6 @@
 // Basic Instructions ---------------------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu.h"
+#include "../cpu/8080.h"
 
 
 // Mo Operation
@@ -34,15 +34,19 @@ static void CMC() {
 
 // Input / Output
 static void IN() {
+    // TODO read from stream
 }
 
 static void OUT() {
+    // TODO write to stream
 }
 
 // Enable / Disable Interupts
 static void EI() {
+    CPU->ime = 1;
 }
 
 static void DI() {
+    CPU->ime = 0;
 }
 

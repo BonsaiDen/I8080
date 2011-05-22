@@ -27,17 +27,27 @@ typedef struct CPU_8080 {
     uint16_t *SP;
     uint16_t *PC;
 
+    // state info
+    uint8_t instruction;
     unsigned long cycles;
+    uint8_t ime;
+
+    // Pins
+    uint8_t halt;
+    uint8_t reset;
 
 } CPU_8080;
 
-CPU_8080 *cpu_create();
-inline void cpu_flag_szap(uint8_t *r);
-inline void cpu_flag_szp(uint8_t *r);
-void cpu_step();
-uint8_t *cpu_next();
+CPU_8080 *CPU;
 
-extern CPU_8080 *CPU;
+void cpu_init();
+void cpu_fetch();
+void cpu_exec();
+void cpu_reset();
+void cpu_destroy();
+
+inline void cpu_flag_szp(uint8_t *r);
+inline void cpu_flag_szap(uint8_t *r);
 
 #endif
 

@@ -1,6 +1,6 @@
 // Math Instructions ----------------------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu.h"
+#include "../cpu/8080.h"
 
 
 // Compare A with REG
@@ -15,7 +15,7 @@ CMP(B); CMP(C); CMP(D); CMP(E); CMP(H); CMP(L); CMP(A);
 
 // Compare A with (HL)
 static void CMP_M() { \
-    int16_t i = *CPU->A - read8(*CPU->HL);
+    int16_t i = *CPU->A - mmu_read(*CPU->HL);
     *CPU->A = i & 0xff;
     cpu_flag_szp(CPU->A);
     *CPU->F |= i < 0;
@@ -23,7 +23,7 @@ static void CMP_M() { \
 
 // Compare A with next BYTE
 static void CPI() {
-    int16_t i = *CPU->A - read8(*CPU->PC);
+    int16_t i = *CPU->A - mmu_read(*CPU->PC);
     *CPU->A = i & 0xff;
     cpu_flag_szp(CPU->A);
     *CPU->F |= i < 0;
@@ -45,7 +45,7 @@ ADD(B); ADD(C); ADD(D); ADD(E); ADD(H); ADD(L); ADD(A);
 
 // Add contents of (HL) to A
 static void ADD_M() { \
-    uint16_t i = *CPU->A + read8(*CPU->HL);
+    uint16_t i = *CPU->A + mmu_read(*CPU->HL);
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szap(CPU->A); // check flags
     *CPU->F |= i > 0xff; // set carry flag
@@ -53,7 +53,7 @@ static void ADD_M() { \
 
 // Add next BYTE to A
 static void ADI() {
-    uint16_t i = *CPU->A + read8(*CPU->PC);
+    uint16_t i = *CPU->A + mmu_read(*CPU->PC);
     *CPU->A = i & 0xff;
     cpu_flag_szap(CPU->A);
     *CPU->F |= i > 0xff;
@@ -71,7 +71,7 @@ ADC(B); ADC(C); ADC(D); ADC(E); ADC(H); ADC(L); ADC(A);
 
 // Add (contents of (HL) + carry) to A
 static void ADC_M() {
-    uint16_t i = (*CPU->A + read8(*CPU->HL)) + (*CPU->F & 1);
+    uint16_t i = (*CPU->A + mmu_read(*CPU->HL)) + (*CPU->F & 1);
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szap(CPU->A); // check flags
     *CPU->F |= i > 0xff; // set carry flag
@@ -79,7 +79,7 @@ static void ADC_M() {
 
 // Add next (BYTE + carry) to A
 static void ACI() {
-    uint16_t i = *CPU->A + read8(*CPU->PC)+ (*CPU->F & 1);
+    uint16_t i = *CPU->A + mmu_read(*CPU->PC) + (*CPU->F & 1);
     *CPU->A = i & 0xff;
     cpu_flag_szap(CPU->A);
     *CPU->F |= i > 0xff;
@@ -97,7 +97,7 @@ SUB(B); SUB(C); SUB(D); SUB(E); SUB(H); SUB(L); SUB(A);
 
 // Subtract contents of (HL) from A
 static void SUB_M() { \
-    int16_t i = *CPU->A - read8(*CPU->HL);
+    int16_t i = *CPU->A - mmu_read(*CPU->HL);
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szp(CPU->A); // check flags
     *CPU->F |= i < 0; // set carry flag
@@ -105,7 +105,7 @@ static void SUB_M() { \
 
 // Subtract next BYTE from A
 static void SUI() {
-    uint16_t i = *CPU->A - read8(*CPU->PC);
+    uint16_t i = *CPU->A - mmu_read(*CPU->PC);
     *CPU->A = i & 0xff;
     cpu_flag_szap(CPU->A);
     *CPU->F |= i < 0xff;
@@ -123,7 +123,7 @@ SBB(B); SBB(C); SBB(D); SBB(E); SBB(H); SBB(L); SBB(A);
 
 // Subtract (contents of (HL) + carry) from A
 static void SBB_M() {
-    int16_t i = (*CPU->A - read8(*CPU->HL)) - (*CPU->F & 1);
+    int16_t i = (*CPU->A - mmu_read(*CPU->HL)) - (*CPU->F & 1);
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szp(CPU->A); // check flags
     *CPU->F |= i < 0; // set carry flag
@@ -131,7 +131,7 @@ static void SBB_M() {
 
 // Subtract next (BYTE + carry) from A
 static void SBI() {
-    uint16_t i = (*CPU->A - read8(*CPU->PC)) - (*CPU->F & 1);
+    uint16_t i = (*CPU->A - mmu_read(*CPU->PC)) - (*CPU->F & 1);
     *CPU->A = i & 0xff;
     cpu_flag_szap(CPU->A);
     *CPU->F |= i < 0xff;

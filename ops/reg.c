@@ -1,6 +1,6 @@
 // Other Register Instructions ------------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu.h"
+#include "../cpu/8080.h"
 
 
 // Increment REG
@@ -13,8 +13,8 @@ INR(A); INR(B); INR(C); INR(D); INR(E); INR(H); INR(L);
 
 // Increment contents of (HL)
 static void INR_M() {
-    uint8_t i = read8(*CPU->HL) + 1;
-    write8(*CPU->HL, &i);
+    uint8_t i = mmu_read(*CPU->HL) + 1;
+    mmu_write(*CPU->HL, i);
     cpu_flag_szap(&i);
 }
 
@@ -28,8 +28,8 @@ DCR(A); DCR(B); DCR(C); DCR(D); DCR(E); DCR(H); DCR(L);
 
 // Decrement contents of (HL)
 static void DCR_M() {
-    uint8_t i = read8(*CPU->HL) - 1;
-    write8(*CPU->HL, &i);
+    uint8_t i = mmu_read(*CPU->HL) - 1;
+    mmu_write(*CPU->HL, i);
     cpu_flag_szap(&i);
 }
 

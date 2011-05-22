@@ -1,36 +1,38 @@
 // Other Accumulator Instructions ---------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu.h"
+#include "../cpu/8080.h"
 
 
 // Load BYTE (WORD) into A
 static void LDA() {
-    *CPU->A = read8(read16(*CPU->PC));
+    uint16_t addr = mmu_read(*CPU->PC) | (mmu_read((*CPU->PC) + 1) << 8);
+    *CPU->A = mmu_read(addr);
 }
 
 // Read BYTE (BC) into A
 static void LDAX_B() {
-    *CPU->A = read8(*CPU->BC);
+    *CPU->A = mmu_read(*CPU->BC);
 }
 
 // Read BYTE (DE) into A
 static void LDAX_D() {
-    *CPU->A = read(*CPU->DE);
+    *CPU->A = mmu_read(*CPU->DE);
 }
 
 
 // Store A to (WORD)
 static void STA() {
-    write8(read16(*CPU->PC), CPU->A);
+    uint16_t addr = mmu_read(*CPU->PC) | (mmu_read((*CPU->PC) + 1) << 8);
+    mmu_write(addr, *CPU->A);
 }
 
 // Store A to (BC)
 static void STAX_B() {
-    write8(*CPU->BC, CPU->A);
+    mmu_write(*CPU->BC, *CPU->A);
 }
 
 // Store A to (DE)
 static void STAX_D() {
-    write8(*CPU->DE, CPU->A);
+    mmu_write(*CPU->DE, *CPU->A);
 }
 
