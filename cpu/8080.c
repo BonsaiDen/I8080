@@ -4,89 +4,93 @@
 #include "8080.h"
 #include "../ops/data.h"
 
-void cpu_init() {
+static void cpu_fetch(CPU_8080 *cpu);
+static uint8_t cpu_exec(CPU_8080 *cpu);
+static void cpu_reset(CPU_8080 *cpu);
+static void cpu_destroy(CPU_8080 **cpu);
+
+
+CPU_8080 *cpu_create() {
     
-    CPU = calloc(1, sizeof(CPU_8080));
+    CPU_8080 *cpu = calloc(1, sizeof(CPU_8080));
 
-    CPU->A = (uint8_t*)&CPU->reg[1]; CPU->F = (uint8_t*)&CPU->reg[0];
-    CPU->B = (uint8_t*)&CPU->reg[3]; CPU->C = (uint8_t*)&CPU->reg[2];
-    CPU->D = (uint8_t*)&CPU->reg[5]; CPU->E = (uint8_t*)&CPU->reg[4];
-    CPU->H = (uint8_t*)&CPU->reg[7]; CPU->L = (uint8_t*)&CPU->reg[6];
+    cpu->A = (uint8_t*)&cpu->reg[1]; cpu->F = (uint8_t*)&cpu->reg[0];
+    cpu->B = (uint8_t*)&cpu->reg[3]; cpu->C = (uint8_t*)&cpu->reg[2];
+    cpu->D = (uint8_t*)&cpu->reg[5]; cpu->E = (uint8_t*)&cpu->reg[4];
+    cpu->H = (uint8_t*)&cpu->reg[7]; cpu->L = (uint8_t*)&cpu->reg[6];
 
-    CPU->PSW = (uint16_t*)&CPU->reg[0];
-    CPU->BC = (uint16_t*)&CPU->reg[2];
-    CPU->DE = (uint16_t*)&CPU->reg[4];
-    CPU->HL = (uint16_t*)&CPU->reg[6];
+    cpu->PSW = (uint16_t*)&cpu->reg[0];
+    cpu->BC = (uint16_t*)&cpu->reg[2];
+    cpu->DE = (uint16_t*)&cpu->reg[4];
+    cpu->HL = (uint16_t*)&cpu->reg[6];
 
-    CPU->SP = (uint16_t*)&CPU->reg[8]; 
-    CPU->PC = (uint16_t*)&CPU->reg[10];
+    cpu->SP = (uint16_t*)&cpu->reg[8]; 
+    cpu->PC = (uint16_t*)&cpu->reg[10];
 
-    cpu_reset();
+    // Map methods
+    cpu->fetch = &cpu_fetch;
+    cpu->exec = &cpu_exec;
+    cpu->reset = &cpu_reset;
+    cpu->destroy = &cpu_destroy;
 
 }
 
-void cpu_fetch() {
-
-    // Act to low reset pin. Reset halted state.
-    if (!CPU->reset) {
-        CPU->halt = 0;
-        *CPU->PC = 0;
-    }
+static void cpu_fetch(CPU_8080 *cpu) {
 
     // fetch instruction and increase PC
-    CPU->instruction = mmu_read((*CPU->PC)++);
+    cpu->instruction = mmu_read((*cpu->PC)++);
 
     // set halted state
-    if (CPU->instruction == 0x76) {
-        CPU->halt = 1;
+    if (cpu->instruction == 0x76) {
+        cpu->halt = 1;
     }
     
 }
 
-unsigned int cpu_exec() {
+static uint8_t cpu_exec(CPU_8080 *cpu) {
 
-    unsigned long cycle_count = CPU->cycle_count;
+    unsigned long cycle_count = cpu->cycle_count;
     
     // call op code function
-    uint8_t inst = CPU->instruction;
-    (*(OP_CODE_POINTER*)&OP_CODE_DATA[inst * 3 + 2])(); 
+    uint8_t inst = cpu->instruction;
+    (*(OP_CODE_POINTER*)&OP_CODE_DATA[inst * 3 + 2])(cpu); 
     
     // increase PC by op size - 1, this is done to reduce amount of code inside
     // instructions
-    *CPU->PC += (OP_CODE_DATA[inst * 3] - 1);
-    *CPU->PC &= 0xffff; // mask PC
+    *cpu->PC += (OP_CODE_DATA[inst * 3] - 1);
+    *cpu->PC &= 0xffff; // mask PC
 
     // add min cycle count, extra cycles are added inside the op code functions
-    CPU->cycle_count += OP_CODE_DATA[inst * 3 + 1];
+    cpu->cycle_count += OP_CODE_DATA[inst * 3 + 1];
     
-    return CPU->cycle_count - cycle_count;
+    return cpu->cycle_count - cycle_count;
 
 }
 
-void cpu_reset() {
+static void cpu_reset(CPU_8080 *cpu) {
 
     // Registers
-    *CPU->PSW = 0;
-    *CPU->BC = 0;
-    *CPU->DE = 0;
-    *CPU->HL = 0;
+    *cpu->PSW = 0;
+    *cpu->BC = 0;
+    *cpu->DE = 0;
+    *cpu->HL = 0;
 
-    *CPU->SP = 65535;
-    *CPU->PC = 0;
+    *cpu->SP = 65535;
+    *cpu->PC = 0;
 
     // state info
-    CPU->instruction = 0;
-    CPU->cycle_count = 0;
-    CPU->ime = 0;
+    cpu->instruction = 0;
+    cpu->cycle_count = 0;
+    cpu->ime = 0;
 
     // Pins
-    CPU->halt = 0;
-    CPU->reset = 1;
+    cpu->halt = 0;
     
 }
 
-void cpu_destroy() {
-    free(CPU);
+static void cpu_destroy(CPU_8080 **cpu) {
+    free(*cpu);
+    *cpu = NULL;
 }
 
 
@@ -98,25 +102,25 @@ static const unsigned int ParityTable256[256] = {
     P6(0), P6(1), P6(1), P6(0)
 };
 
-inline void cpu_flag_szap(uint8_t *r) {
+inline void cpu_flag_szap(CPU_8080 *cpu, uint8_t *r) {
     
-    (*CPU->F) = 0; // clear flags
+    (*cpu->F) = 0; // clear flags
 
     // TODO double check these
-    if (*r & 128)              (*CPU->F) |= 128; // set SIGN flag
-    if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
-    if (!(*r & 15 && *r & 31)) (*CPU->F) |=  16; // set AUXILLARY CARRY flag
-    if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
+    if (*r & 128)              (*cpu->F) |= 128; // set SIGN flag
+    if (*r == 0)               (*cpu->F) |=  64; // set ZERO flag
+    if (!(*r & 15 && *r & 31)) (*cpu->F) |=  16; // set AUXILLARY CARRY flag
+    if (ParityTable256[*r])    (*cpu->F) |=   4; // set PARITY flag
     
 }
 
-inline void cpu_flag_szp(uint8_t *r) {
+inline void cpu_flag_szp(CPU_8080 *cpu, uint8_t *r) {
 
-    (*CPU->F) = 0; // clear flags
+    (*cpu->F) = 0; // clear flags
 
-    if (*r & 128)              (*CPU->F) |= 128; // set SIGN flag
-    if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
-    if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
+    if (*r & 128)              (*cpu->F) |= 128; // set SIGN flag
+    if (*r == 0)               (*cpu->F) |=  64; // set ZERO flag
+    if (ParityTable256[*r])    (*cpu->F) |=   4; // set PARITY flag
 
 }
 

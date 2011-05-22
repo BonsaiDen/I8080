@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+struct CPU_8080;
 typedef struct CPU_8080 {
 
     uint8_t reg[12];
@@ -27,27 +28,24 @@ typedef struct CPU_8080 {
     uint16_t *SP;
     uint16_t *PC;
 
-    // state info
-    uint8_t instruction;
     unsigned long cycle_count;
-    uint8_t ime;
+    uint8_t instruction;
 
-    // Pins
+    uint8_t ime;
     uint8_t halt;
-    uint8_t reset;
+
+    void (*fetch)(struct CPU_8080 *cpu);
+    uint8_t (*exec)(struct CPU_8080 *cpu);
+    void (*reset)(struct CPU_8080 *cpu);
+    void (*destroy)(struct CPU_8080 **cpu);
+
 
 } CPU_8080;
 
-CPU_8080 *CPU;
+CPU_8080 *cpu_create();
 
-void cpu_init();
-void cpu_fetch();
-unsigned int cpu_exec();
-void cpu_reset();
-void cpu_destroy();
-
-inline void cpu_flag_szp(uint8_t *r);
-inline void cpu_flag_szap(uint8_t *r);
+inline void cpu_flag_szp(CPU_8080 *cpu, uint8_t *r);
+inline void cpu_flag_szap(CPU_8080 *cpu, uint8_t *r);
 
 #endif
 

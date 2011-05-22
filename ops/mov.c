@@ -4,13 +4,13 @@
 
 
 // Move FROM to TO
-#define MOV(TO, FROM) static void MOV_##TO##_##FROM() { \
-    *CPU->TO = *CPU->FROM; \
+#define MOV(TO, FROM) static void MOV_##TO##_##FROM(CPU_8080 *cpu) { \
+    *cpu->TO = *cpu->FROM; \
 }
 
 // Move BYTE (HL) to TO
-#define MOV_M_R(TO) static void MOV_##TO##_M() { \
-    *CPU->TO = mmu_read(*CPU->HL); \
+#define MOV_M_R(TO) static void MOV_##TO##_M(CPU_8080 *cpu) { \
+    *cpu->TO = mmu_read(*cpu->HL); \
 }
 
 MOV(A, A); MOV(A, B); MOV(A, C); MOV(A, D); MOV(A, E); MOV(A, H); MOV(A, L); 
@@ -35,21 +35,21 @@ MOV(L, A); MOV(L, B); MOV(L, C); MOV(L, D); MOV(L, E); MOV(L, H); MOV(L, L);
 MOV_M_R(L);
 
 // Write FROM to (HL)
-#define MOV_M(FROM) static void MOV_M_##FROM() { \
-    mmu_write(*CPU->HL, *CPU->FROM); \
+#define MOV_M(FROM) static void MOV_M_##FROM(CPU_8080 *cpu) { \
+    mmu_write(*cpu->HL, *cpu->FROM); \
 }
 MOV_M(A); MOV_M(B); MOV_M(C); MOV_M(D); MOV_M(E); MOV_M(H); MOV_M(L);
 
 
 // Move next BYTE to TO
-#define MVI(TO) static void MVI_##TO() { \
-    *CPU->TO = mmu_read(*CPU->PC); \
+#define MVI(TO) static void MVI_##TO(CPU_8080 *cpu) { \
+    *cpu->TO = mmu_read(*cpu->PC); \
 }
 MVI(A); MVI(B); MVI(C); MVI(D); MVI(E); MVI(H); MVI(L);
 
 // Move next BYTE to (HL)
-static void MVI_M() {
-    mmu_write(*CPU->HL, mmu_read(*CPU->PC));
+static void MVI_M(CPU_8080 *cpu) {
+    mmu_write(*cpu->HL, mmu_read(*cpu->PC));
 }
 
 
@@ -57,26 +57,26 @@ static void MVI_M() {
 // ----------------------------------------------------------------------------
 
 // Load (WORD) to HL
-static void LHLD() {
-    uint16_t addr = mmu_read(*CPU->PC) | (mmu_read((*CPU->PC) + 1) << 8);
-    *CPU->HL = mmu_read(addr) | (mmu_read(addr + 1) << 8);
+static void LHLD(CPU_8080 *cpu) {
+    uint16_t addr = mmu_read(*cpu->PC) | (mmu_read((*cpu->PC) + 1) << 8);
+    *cpu->HL = mmu_read(addr) | (mmu_read(addr + 1) << 8);
 }
 
 // Store HL to (WORD)
-static void SHLD() {
-    uint16_t addr = mmu_read(*CPU->PC) | (mmu_read((*CPU->PC) + 1) << 8);
-    mmu_write(addr, (*CPU->HL) & 0xff);
-    mmu_write(addr + 1, (*CPU->HL) >> 8);
+static void SHLD(CPU_8080 *cpu) {
+    uint16_t addr = mmu_read(*cpu->PC) | (mmu_read((*cpu->PC) + 1) << 8);
+    mmu_write(addr, (*cpu->HL) & 0xff);
+    mmu_write(addr + 1, (*cpu->HL) >> 8);
 }
 
 // Move HL to SP
-static void SPHL() {
-    *CPU->SP = *CPU->HL;
+static void SPHL(CPU_8080 *cpu) {
+    *cpu->SP = *cpu->HL;
 }
 
 // Load next WORD into REG
-#define LXI(NAME, REG) static void LXI_##NAME() { \
-    *CPU->REG = mmu_read(*CPU->PC) | (mmu_read((*CPU->PC) + 1) << 8); \
+#define LXI(NAME, REG) static void LXI_##NAME(CPU_8080 *cpu) { \
+    *cpu->REG = mmu_read(*cpu->PC) | (mmu_read((*cpu->PC) + 1) << 8); \
 }
 LXI(B, BC); LXI(D, DE); LXI(H, HL); LXI(SP, SP);
 

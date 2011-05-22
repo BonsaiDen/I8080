@@ -12,7 +12,7 @@
 #include "stack.c"
 #include "ctrl.c"
 
-typedef void (*OP_CODE_POINTER)();
+typedef void (*OP_CODE_POINTER)(CPU_8080 *cpu);
 
 // Size in Bytes | Cycle Count | Function Address
 unsigned int OP_CODE_DATA[768] = {
