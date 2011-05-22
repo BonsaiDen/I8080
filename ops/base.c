@@ -33,3 +33,17 @@ static void CMC() {
     (*CPU->F) ^= 1;
 }
 
+// Input / Output
+static void IN() {
+}
+
+static void OUT() {
+}
+
+// Enable / Disable Interupts
+static void EI() {
+}
+
+static void DI() {
+}
+

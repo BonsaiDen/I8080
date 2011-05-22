@@ -4,6 +4,37 @@
 extern CPU_8080 *CPU;
 
 
+// Compare A with REG
+#define CMP(REG) static void CMP_##REG() { \
+    int16_t i = *CPU->A - *CPU->REG; \
+    *CPU->A = i & 0xff; \
+    cpu_flag_szp(CPU->A); \
+    *CPU->F |= i < 0; \
+}
+
+CMP(B); CMP(C); CMP(D); CMP(E); CMP(H); CMP(L); CMP(A);
+
+// Compare A with (HL)
+static void CMP_M() { \
+    int16_t i = *CPU->A - read8(*CPU->HL);
+    *CPU->A = i & 0xff;
+    cpu_flag_szp(CPU->A);
+    *CPU->F |= i < 0;
+}
+
+// Compare A with next BYTE
+static void CPI() {
+    int16_t i = *CPU->A - read8(*CPU->PC);
+    *CPU->A = i & 0xff;
+    cpu_flag_szp(CPU->A);
+    *CPU->F |= i < 0;
+}
+
+
+// 8 BIT ----------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+
 // Add (REG) to A
 #define ADD(REG) static void ADD_##REG() { \
     uint16_t i = *CPU->A + *CPU->REG; \
@@ -19,6 +50,14 @@ static void ADD_M() { \
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szap(CPU->A); // check flags
     *CPU->F |= i > 0xff; // set carry flag
+}
+
+// Add next BYTE to A
+static void ADI() {
+    uint16_t i = *CPU->A + read8(*CPU->PC);
+    *CPU->A = i & 0xff;
+    cpu_flag_szap(CPU->A);
+    *CPU->F |= i > 0xff;
 }
 
 
@@ -39,6 +78,14 @@ static void ADC_M() {
     *CPU->F |= i > 0xff; // set carry flag
 }
 
+// Add next (BYTE + carry) to A
+static void ACI() {
+    uint16_t i = *CPU->A + read8(*CPU->PC)+ (*CPU->F & 1);
+    *CPU->A = i & 0xff;
+    cpu_flag_szap(CPU->A);
+    *CPU->F |= i > 0xff;
+}
+
 
 // Subtract (REG) from A
 #define SUB(REG) static void SUB_##REG() { \
@@ -57,6 +104,14 @@ static void SUB_M() { \
     *CPU->F |= i < 0; // set carry flag
 }
 
+// Subtract next BYTE from A
+static void SUI() {
+    uint16_t i = *CPU->A - read8(*CPU->PC);
+    *CPU->A = i & 0xff;
+    cpu_flag_szap(CPU->A);
+    *CPU->F |= i < 0xff;
+}
+
 
 // Subtract (REG + carry) from A
 #define SBB(REG) static void SBB_##REG() { \
@@ -73,6 +128,14 @@ static void SBB_M() {
     *CPU->A = i & 0xff; // mask to 255
     cpu_flag_szp(CPU->A); // check flags
     *CPU->F |= i < 0; // set carry flag
+}
+
+// Subtract next (BYTE + carry) from A
+static void SBI() {
+    uint16_t i = (*CPU->A - read8(*CPU->PC)) - (*CPU->F & 1);
+    *CPU->A = i & 0xff;
+    cpu_flag_szap(CPU->A);
+    *CPU->F |= i < 0xff;
 }
 
 

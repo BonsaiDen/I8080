@@ -68,6 +68,11 @@ static void SHLD() {
     write16(read16(*CPU->PC), CPU->HL);
 }
 
+// Move HL to SP
+static void SPHL() {
+    *CPU->SP = *CPU->HL;
+}
+
 // Load next WORD into REG
 #define LXI(NAME, REG) static void LXI_##NAME() { \
     *CPU->REG = read16(*CPU->PC); \

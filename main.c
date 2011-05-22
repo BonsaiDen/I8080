@@ -40,16 +40,16 @@ int main(int argc, const char *argv[]) {
     MEMORY = calloc(65536, sizeof(uint8_t));
     uint8_t TEST[65536] = {
 
-        MVI_A,     16,
-        LXI_H, 100, 0,
-        ADD_M,  
-        DCR_M,
-        MOV_A_M,
-        INR_M,
+        LHLD, 64, 0,
+        INR_L,
+        SHLD, 64, 0,
+        LXI_H, 0, 0,
+        LHLD, 64, 0,
         HLT,
 
     };
 
+    TEST[64] = 42;
     TEST[100] = 128;
 
     memcpy(MEMORY, TEST, sizeof(TEST));
