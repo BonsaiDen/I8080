@@ -43,7 +43,9 @@ void cpu_fetch() {
     
 }
 
-void cpu_exec() {
+unsigned int cpu_exec() {
+
+    unsigned long cycle_count = CPU->cycle_count;
     
     // call op code function
     uint8_t inst = CPU->instruction;
@@ -55,8 +57,10 @@ void cpu_exec() {
     *CPU->PC &= 0xffff; // mask PC
 
     // add min cycle count, extra cycles are added inside the op code functions
-    CPU->cycles += OP_CODE_DATA[inst * 3 + 1];
+    CPU->cycle_count += OP_CODE_DATA[inst * 3 + 1];
     
+    return CPU->cycle_count - cycle_count;
+
 }
 
 void cpu_reset() {
@@ -72,7 +76,7 @@ void cpu_reset() {
 
     // state info
     CPU->instruction = 0;
-    CPU->cycles = 0;
+    CPU->cycle_count = 0;
     CPU->ime = 0;
 
     // Pins

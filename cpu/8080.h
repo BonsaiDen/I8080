@@ -29,7 +29,7 @@ typedef struct CPU_8080 {
 
     // state info
     uint8_t instruction;
-    unsigned long cycles;
+    unsigned long cycle_count;
     uint8_t ime;
 
     // Pins
@@ -42,7 +42,7 @@ CPU_8080 *CPU;
 
 void cpu_init();
 void cpu_fetch();
-void cpu_exec();
+unsigned int cpu_exec();
 void cpu_reset();
 void cpu_destroy();
 

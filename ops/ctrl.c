@@ -43,42 +43,42 @@ static inline void ret() {
     }\
     static void PREFIX##NZ() {\
         if (!(*CPU->F & 64)) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##Z() {\
         if (*CPU->F & 64) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##NC() {\
         if (!(*CPU->F & 1)) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##C() {\
         if (*CPU->F & 1) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##PO() {\
         if (!(*CPU->F & 4)) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##PE() {\
         if (*CPU->F & 4) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##P() {\
         if (!(*CPU->F & 128)) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
     static void PREFIX##M() {\
         if (*CPU->F & 128) {\
-            METHOD(); CPU->cycles += CYCLES;\
+            METHOD(); CPU->cycle_count += CYCLES;\
         }\
     }\
 

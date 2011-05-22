@@ -12,28 +12,16 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <curses.h>
 #include <unistd.h>
 
+#include <sys/timeb.h>
+
 uint8_t *MEMORY;
-WINDOW *cpu_win;
-WINDOW *mem_win;
 
 
-static void run();
+static void emulate();
 
 int main(int argc, const char *argv[]) {
-
-    // Setup
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    nodelay(stdscr, TRUE);
-
-    cpu_win = newwin(LINES, COLS / 2, 15, 0);
-    mem_win = newwin(LINES, COLS / 2 - 1, 0, COLS / 2 + 1);
-    scrollok(mem_win, TRUE);
 
     // Init memory
     MEMORY = calloc(65536, sizeof(uint8_t));
@@ -66,71 +54,79 @@ int main(int argc, const char *argv[]) {
     // Start CPU
     cpu_init();
     *CPU->SP = 65535;
-    run();
+    emulate();
 
-    // cleanup
-    free(mem_win);
-    free(cpu_win);
     free(MEMORY);
-
     cpu_destroy();
-    endwin();
 
     return 0;
 
 }
 
-static void run() {
 
-    int ch = 0;
-    int paused = 0, first = 1, count = 0;
-    while(1) {
-            
-        if (!paused) {
+static unsigned long now() {
+    struct timeb tp;
+    ftime(&tp);
+    return tp.millitm + tp.time * 1000;
+}
 
-            uint8_t inst = 0;
-            if (!first) {
 
-                cpu_fetch();
-                inst = CPU->instruction;
-//                wprintw(mem_win, "%-5s(%02x)\n", OP_CODE_NAMES[inst], inst);
-                cpu_exec();
-                
-            }
-            
-            if (count > 2000) {
-                 
-                uint8_t flags = *CPU->F;
-                wmove(cpu_win, 0, 0);
-                wprintw(cpu_win, "\n  (F) %c %c %c %c %c %c %c %c\n", 
-                            (flags & 128) ? 'S' : '-',
-                            (flags &  64) ? 'Z' : '-',
-                            (flags &  32) ? '0' : ' ',
-                            (flags &  16) ? 'A' : '-',
-                            (flags &   8) ? '0' : ' ',
-                            (flags &   4) ? 'P' : '-',
-                            (flags &   2) ? '1' : ' ',
-                            (flags &   1) ? 'C' : '-' );
+static void emulate() {
 
-                wprintw(cpu_win, "  (A)   %03d (PSW) %05d  (OP)  %-5s\n", *CPU->A, *CPU->PSW, OP_CODE_NAMES[inst]);
-                wprintw(cpu_win, "  (B)   %03d   (C)   %03d  (BC)  %05d\n", *CPU->B, *CPU->C, *CPU->BC);
-                wprintw(cpu_win, "  (D)   %03d   (E)   %03d  (DE)  %05d\n", *CPU->D, *CPU->E, *CPU->DE);
-                wprintw(cpu_win, "  (H)   %03d   (L)   %03d  (HL)  %05d\n", *CPU->H, *CPU->L, *CPU->HL);
-                wprintw(cpu_win, " (SP) %05d  (PC) %05d\n", *CPU->SP, *CPU->PC);
-                wprintw(cpu_win, "(CYC) %17lu\n", CPU->cycles);
-                wrefresh(cpu_win);
-                count = 0;
-            }
+    unsigned int clock_speed = 2,
+                 cycles_per_second = 0,
+                 second_time = 0,
+                 time_taken = 10;
+
+    unsigned long last_time = now();
+
+    for(;;) {
+
+        unsigned long start_time = now();
+        unsigned long cycle_end = CPU->cycle_count + clock_speed * 10000;
+        while(CPU->cycle_count < cycle_end) {
+            cpu_fetch();
+            cycles_per_second += cpu_exec();
+        }
+
+        // Speed control
+        usleep(10000 - time_taken * 20); // sleep ~10 ms - some other stuff
+
+        time_taken = now() - start_time;
+        second_time += time_taken;
+
+        // Log Mhz every second
+        if (second_time >= 1000) {
+
+            double cur_clock_speed = (double)cycles_per_second / 1000000;
+            printf("Clocking at %.2f Mhz\n", cur_clock_speed);
+
+            cycles_per_second = 0;
+            second_time -= 1000;
 
         }
 
-        count++;
-//        wrefresh(mem_win);
-
-//        usleep(1);
-        first = 0;
-    
     }
-    
+
 }
 
+//            if (counter <= 0) {
+//                printf("Hello World!\n");
+//                counter += vblank_interrupt;
+//            }
+
+
+//
+//    unsigned int CPU_HZ = 2000000;
+//    unsigned int SCREEN_HZ = 50;
+//    unsigned int VBLANK = CPU_HZ / SCREEN_HZ;
+//    unsigned int SCANLINES = 256;
+//    unsigned int SCREEN_LINES = 212;
+//    unsigned int vblank_interrupt = (SCANLINES - SCREEN_LINES) * VBLANK / SCANLINES;
+//    unsigned int CYCLE_DURATION = 1000000 / CPU_HZ;
+//
+//    printf("%d\n", vblank_interrupt);
+//
+//    int counter = vblank_interrupt;
+//
+//
