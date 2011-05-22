@@ -32,8 +32,8 @@ typedef struct CPU_8080 {
 } CPU_8080;
 
 CPU_8080 *cpu_create();
-inline cpu_flag_szap_inc(uint16_t *r);
-inline void cpu_flag_szap_dec(uint16_t *r);
+inline void cpu_flag_szap(uint8_t *r);
+inline void cpu_flag_szp(uint8_t *r);
 void cpu_step();
 uint8_t *cpu_next();
 

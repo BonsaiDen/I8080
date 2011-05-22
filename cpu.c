@@ -3,11 +3,13 @@
 #include <stdio.h>
 
 #include "cpu.h"
-#include "ops.h"
+#include "ops/data.h"
+
+#include <curses.h>
 
 extern CPU_8080 *CPU;
 extern uint8_t *MEMORY;
-
+extern WINDOW *mem_win;
 
 /* Create ------------------------------------------------------------------- */
 CPU_8080 *cpu_create() {
@@ -45,13 +47,13 @@ void cpu_step() {
     uint8_t *inst = cpu_next();
     (*CPU->PC)++; // increase PC
     
-    OPC *func = (OPC*)&OP_CODES[*inst * 3 + 2]; // call op func
+    OP_CODE_POINTER *func = (OP_CODE_POINTER*)&OP_CODE_DATA[*inst * 3 + 2]; // call op func
     (*func)(); 
     
-    *CPU->PC += (OP_CODES[*inst * 3] - 1); // increase PC by op size - 1
+    *CPU->PC += (OP_CODE_DATA[*inst * 3] - 1); // increase PC by op size - 1
     *CPU->PC &= 0xffff;
 
-    CPU->cycles += OP_CODES[*inst * 3 + 1]; // add min  cycle count 
+    CPU->cycles += OP_CODE_DATA[*inst * 3 + 1]; // add min  cycle count 
     
 }
 
@@ -64,22 +66,25 @@ static const unsigned int ParityTable256[256] = {
     P6(0), P6(1), P6(1), P6(0)
 };
 
-inline cpu_flag_szap_inc(uint16_t *r) {
+inline void cpu_flag_szap(uint8_t *r) {
     
     (*CPU->F) = 0; // clear flags
 
-    if ((*r & 128))            (*CPU->F) |= 128; // set SIGN flag
+//    wprintw(mem_win, "flags: %d\n", *r);
+
+    // TODO double check these
+    if (*r & 128)              (*CPU->F) |= 128; // set SIGN flag
     if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
     if (!(*r & 15 && *r & 31)) (*CPU->F) |=  16; // set AUXILLARY CARRY flag
     if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
     
 }
 
-inline void cpu_flag_szap_dec(uint16_t *r) {
+inline void cpu_flag_szp(uint8_t *r) {
 
     (*CPU->F) = 0; // clear flags
 
-    if (!(*r & 128))           (*CPU->F) |= 128; // set SIGN flag
+    if (*r & 128)              (*CPU->F) |= 128; // set SIGN flag
     if (*r == 0)               (*CPU->F) |=  64; // set ZERO flag
     if (ParityTable256[*r])    (*CPU->F) |=   4; // set PARITY flag
 

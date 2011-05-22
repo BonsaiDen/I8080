@@ -1,4 +1,9 @@
-enum INSTRUCTIONS {
+// 8080 OP Code Mnemonics -----------------------------------------------------
+// ----------------------------------------------------------------------------
+#ifndef CPU_8080_OP_CODES
+#define CPU_8080_OP_CODES
+
+enum OP_CODE_MNEMONICS {
 
     // x0 - x7
     NOP,
@@ -22,8 +27,6 @@ enum INSTRUCTIONS {
     MVI_C,
     RRC,
 
-    // -----------------------
-
     // 10 - 17
     NOP_10,
     LXI_D,
@@ -46,8 +49,6 @@ enum INSTRUCTIONS {
     MVI_E,
     RAR,
 
-    // -----------------------
-
     // 20 - 27
     NOP_20,
     LXI_H,
@@ -69,8 +70,6 @@ enum INSTRUCTIONS {
     DCR_L,
     MVI_L,
     CMA,
-
-    // -----------------------
 
     // 30 - 37
     NOP_30,
@@ -182,5 +181,95 @@ enum INSTRUCTIONS {
     MOV_A_M,
     MOV_A_A,
 
+    // 80 - 87
+    ADD_B,
+    ADD_C,
+    ADD_D,
+    ADD_E,
+
+    ADD_H,
+    ADD_L,
+    ADD_M,
+    ADD_A,
+
+    // 88 - 8f
+    ADC_B,
+    ADC_C,
+    ADC_D,
+    ADC_E,
+
+    ADC_H,
+    ADC_L,
+    ADC_M,
+    ADC_A,
+
+    // 90 - 97
+    SUB_B,
+    SUB_C,
+    SUB_D,
+    SUB_E,
+    
+    SUB_H,
+    SUB_L,
+    SUB_M,
+    SUB_A,
+    
+    // 98 - 9f
+    SBB_B,
+    SBB_C,
+    SBB_D,
+    SBB_E,
+
+    SBB_H,
+    SBB_L,
+    SBB_M,
+    SBB_A,
+
+    // A0 - A7
+    ANA_B,
+    ANA_C,
+    ANA_D,
+    ANA_E,
+
+    ANA_H,
+    ANA_L,
+    ANA_M,
+    ANA_A,
+    
+    // A8 - Af
+    XRA_B,
+    XRA_C,
+    XRA_D,
+    XRA_E,
+
+    XRA_H,
+    XRA_L,
+    XRA_M,
+    XRA_A,
+
+    // B0 - B7
+    ORA_B,
+    ORA_C,
+    ORA_D,
+    ORA_E,
+
+    ORA_H,
+    ORA_L,
+    ORA_M,
+    ORA_A,
+    
+    // B8 - Bf
+    CMP_B,
+    CMP_C,
+    CMP_D,
+    CMP_E,
+
+    CMP_H,
+    CMP_L,
+    CMP_M,
+    CMP_A,
+
 };
+
+#endif
 

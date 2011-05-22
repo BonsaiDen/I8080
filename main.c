@@ -1,3 +1,5 @@
+// gcc -ggdb -o main cpu.c mmu.c main.c -fomit-frame-pointer -lcurses -DDEBUG_MEM && ./main
+
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -15,8 +17,8 @@ WINDOW *mem_win;
 
 #include "cpu.h"
 #include "mmu.h"
-#include "inst.h"
-#include "inst_names.h"
+#include "ops/codes.h"
+#include "ops/names.h"
 
 
 static void run();
@@ -37,37 +39,18 @@ int main(int argc, const char *argv[]) {
     // Init memory
     MEMORY = calloc(65536, sizeof(uint8_t));
     uint8_t TEST[65536] = {
-        
+
         MVI_A,     16,
-        RLC,
-        RLC,
-        RLC,
-        RLC,
-        RLC,
-        RLC,
-        RLC,
-
-        STA,  255, 0,
-        MVI_A,     0,
-        LDA,  255, 0,
-        LHLD, 100, 0,
-
-        LXI_B, 42, 0,
-
-        DAD_B,
-
-        SHLD, 110, 0,
-
-        LXI_H,  0, 0,
-
-        LHLD, 110, 0,
-        
-        HLT
+        LXI_H, 100, 0,
+        ADD_M,  
+        DCR_M,
+        MOV_A_M,
+        INR_M,
+        HLT,
 
     };
 
-    TEST[100] = 255;
-    TEST[101] = 128;
+    TEST[100] = 128;
 
     memcpy(MEMORY, TEST, sizeof(TEST));
     
@@ -88,17 +71,15 @@ int main(int argc, const char *argv[]) {
 
 static void run() {
 
+    *CPU->SP = 65535;
+
     int ch = 0;
     int paused = 0;
     while(1) {
             
-        if ((ch = getch()) == ERR) {
-        } else {
-        }
-
         uint8_t inst = *cpu_next();
         if (!paused) {
-            wprintw(mem_win, "%-5s(%02x)\n", INST_NAMES[inst], inst);
+            wprintw(mem_win, "%-5s(%02x)\n", OP_CODE_NAMES[inst], inst);
             cpu_step();
             
             uint8_t flags = *CPU->F;
@@ -113,7 +94,7 @@ static void run() {
                         (flags &   2) ? '1' : ' ',
                         (flags &   1) ? 'C' : '-' );
 
-            wprintw(cpu_win, "  (A)   %03d (PSW) %05d  (OP)  %-5s(%02x)\n", *CPU->A, *CPU->PSW, INST_NAMES[inst], inst);
+            wprintw(cpu_win, "  (A)   %03d (PSW) %05d  (OP)  %-5s\n", *CPU->A, *CPU->PSW, OP_CODE_NAMES[inst]);
             wprintw(cpu_win, "  (B)   %03d   (C)   %03d  (BC)  %05d\n", *CPU->B, *CPU->C, *CPU->BC);
             wprintw(cpu_win, "  (D)   %03d   (E)   %03d  (DE)  %05d\n", *CPU->D, *CPU->E, *CPU->DE);
             wprintw(cpu_win, "  (H)   %03d   (L)   %03d  (HL)  %05d\n", *CPU->H, *CPU->L, *CPU->HL);

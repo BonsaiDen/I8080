@@ -14,6 +14,13 @@ extern WINDOW *mem_win;
 #endif
 
 inline uint8_t read8(uint16_t addr) {
+    if (addr < 0 || addr > 0xffff) {
+        #ifdef DEBUG_MEM
+            wprintw(mem_win, "  [R 8] (%5d) INVALID\n", addr);
+        #endif
+        return 0;
+    }
+
     uint16_t val = MEMORY[addr];
     #ifdef DEBUG_MEM
         wprintw(mem_win, "  [R 8] (%5d) %3d\n", addr, val);
@@ -30,6 +37,14 @@ inline uint16_t read16(uint16_t addr) {
 }
 
 inline void write8(uint16_t addr, uint8_t *val) {
+
+    if (addr < 0 || addr > 0xffff) {
+        #ifdef DEBUG_MEM
+            wprintw(mem_win, "  [R 8] (%5d) INVALID\n", addr);
+        #endif
+        return;
+    }
+
     #ifdef DEBUG_MEM
         wprintw(mem_win, "  [W 8] (%5d) %3d\n", addr, *val);
     #endif
