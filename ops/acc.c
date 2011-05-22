@@ -1,7 +1,6 @@
 // Other Accumulator Instructions ---------------------------------------------
 // ----------------------------------------------------------------------------
 #include "../cpu.h"
-extern CPU_8080 *CPU;
 
 
 // Load BYTE (WORD) into A

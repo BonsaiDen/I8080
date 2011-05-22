@@ -269,6 +269,94 @@ enum OP_CODE_MNEMONICS {
     CMP_M,
     CMP_A,
 
+    // C0 - C7
+    RNZ,
+    POP_B,
+    JNZ,
+    JMP,
+
+    CNZ,
+    PUSH_B,
+    ADI,
+    RST_0,
+
+    // C8 - Cf
+    RZ,
+    RET,
+    JZ,
+    JMP_1, // remapped
+
+    CZ,
+    CALL,
+    ACI,
+    RST_1,
+
+    // D0 - D7
+    RNC,
+    POP_D,
+    JNC,
+    OUT,
+
+    CNC,
+    PUSH_D,
+    SUI,
+    RST_2,
+
+    // D8 - Df
+    RC,
+    RET_1, // remapped
+    JC,
+    IN,
+
+    CC,
+    CALL_1, // remapped
+    SBI,
+    RST_3,
+
+    // E0 - E7
+    RPO,
+    POP_H,
+    JPO,
+    XTHL,
+
+    CPO,
+    PUSH_H,
+    ANI,
+    RST_4,
+
+    // E8 - Ef
+    RPE,
+    PCHL,
+    JPE,
+    XCHG,
+
+    CPE,
+    CALL_2, // remapped
+    XRI,
+    RST_5,
+
+    // F0 - F7
+    RP,
+    POP_PSW,
+    JP,
+    DI,
+
+    CP,
+    PUSH_PSW,
+    ORI,
+    RST_6,
+
+    // F8 - Ff
+    RM,
+    SPHL,
+    JM,
+    EI,
+
+    CM,
+    CALL_3, // remapped
+    CPI,
+    RST_7
+
 };
 
 #endif

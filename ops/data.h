@@ -9,6 +9,8 @@
 #include "math.c"
 #include "mov.c"
 #include "reg.c"
+#include "stack.c"
+#include "ctrl.c"
 
 typedef void (*OP_CODE_POINTER)();
 
@@ -279,6 +281,94 @@ unsigned int OP_CODE_DATA[768] = {
     1,   7,  (unsigned int)& CMP_M,
     1,   4,  (unsigned int)& CMP_A,
 
+    // C0 - C7
+    1,   5,  (unsigned int)& RNZ,
+    1,  10,  (unsigned int)& POP_B,
+    3,  10,  (unsigned int)& JNZ,
+    3,  10,  (unsigned int)& JMP,
+
+    3,  11,  (unsigned int)& CNZ,
+    1,  11,  (unsigned int)& PUSH_B,
+    2,   7,  (unsigned int)& ADI,
+    1,  11,  (unsigned int)& RST_0,
+
+    // C8 - Cf
+    1,   5,  (unsigned int)& RZ,
+    1,  10,  (unsigned int)& RET,
+    3,  10,  (unsigned int)& JZ,
+    3,  10,  (unsigned int)& JMP,
+
+    3,  11,  (unsigned int)& CZ,
+    3,  17,  (unsigned int)& CALL,
+    2,   7,  (unsigned int)& ACI,
+    1,  11,  (unsigned int)& RST_1,
+
+    // D0 - D7
+    1,   5,  (unsigned int)& RNC,
+    1,  10,  (unsigned int)& POP_D,
+    3,  10,  (unsigned int)& JNC,
+    2,  10,  (unsigned int)& OUT,
+
+    3,  11,  (unsigned int)& CNC,
+    1,  11,  (unsigned int)& PUSH_D,
+    2,   7,  (unsigned int)& SUI,
+    1,  11,  (unsigned int)& RST_2,
+
+    // D8 - Df
+    1,   5,  (unsigned int)& RC,
+    1,  10,  (unsigned int)& RET,
+    3,  10,  (unsigned int)& JC,
+    2,  10,  (unsigned int)& IN,
+
+    3,  11,  (unsigned int)& CC,
+    3,  17,  (unsigned int)& CALL,
+    2,   7,  (unsigned int)& SBI,
+    1,  11,  (unsigned int)& RST_3,
+
+    // E0 - E7
+    1,   5,  (unsigned int)& RPO,
+    1,  10,  (unsigned int)& POP_H,
+    3,  10,  (unsigned int)& JPO,
+    1,  18,  (unsigned int)& XTHL,
+
+    3,  11,  (unsigned int)& CPO,
+    1,  11,  (unsigned int)& PUSH_H,
+    2,   7,  (unsigned int)& ANI,
+    1,  11,  (unsigned int)& RST_4,
+
+    // E8 - Ef
+    1,   5,  (unsigned int)& RPE,
+    1,   5,  (unsigned int)& PCHL,
+    3,  10,  (unsigned int)& JPE,
+    1,   5,  (unsigned int)& XCHG,
+
+    3,  11,  (unsigned int)& CPE,
+    3,  17,  (unsigned int)& CALL,
+    2,   7,  (unsigned int)& XRI,
+    1,  11,  (unsigned int)& RST_5,
+
+    // F0 - F7
+    1,   5,  (unsigned int)& RP,
+    1,  10,  (unsigned int)& POP_PSW,
+    3,  10,  (unsigned int)& JP,
+    1,   4,  (unsigned int)& DI,
+
+    3,  11,  (unsigned int)& CP,
+    1,  11,  (unsigned int)& PUSH_PSW,
+    2,   7,  (unsigned int)& ORI,
+    1,  11,  (unsigned int)& RST_6,
+
+    // F8 - Ff
+    1,   5,  (unsigned int)& RM,
+    1,   5,  (unsigned int)& SPHL,
+    3,  10,  (unsigned int)& JM,
+    1,   4,  (unsigned int)& EI,
+
+    3,  11,  (unsigned int)& CM,
+    3,  17,  (unsigned int)& CALL,
+    2,   7,  (unsigned int)& CPI,
+    1,  11,  (unsigned int)& RST_7
+    
 };
 
 #endif

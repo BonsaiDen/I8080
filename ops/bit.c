@@ -1,7 +1,6 @@
 // Bitwise Instructions -------------------------------------------------------
 // ----------------------------------------------------------------------------
 #include "../cpu.h"
-extern CPU_8080 *CPU;
 
 
 // Rotate left ignoring F carry
@@ -52,6 +51,12 @@ static void ANA_M() {
     cpu_flag_szp(CPU->A); \
 }
 
+// AND A with next BYTE
+static void ANI() {
+    *CPU->A &= read8(*CPU->PC); \
+    cpu_flag_szp(CPU->A); \
+}
+
 
 // XOR A with register REG
 #define XRA(REG) static void XRA_##REG() { \
@@ -66,6 +71,12 @@ static void XRA_M() {
     cpu_flag_szp(CPU->A); \
 }
 
+// XOR A with next BYTE
+static void XRI() {
+    *CPU->A ^= read8(*CPU->PC); \
+    cpu_flag_szp(CPU->A); \
+}
+
 
 // OR A with register REG
 #define ORA(REG) static void ORA_##REG() { \
@@ -77,6 +88,12 @@ ORA(B); ORA(C); ORA(D); ORA(E); ORA(H); ORA(L); ORA(A);
 // OR A with contents of (HL)
 static void ORA_M() {
     *CPU->A |= read8(*CPU->HL); \
+    cpu_flag_szp(CPU->A); \
+}
+
+// OR A with next BYTE
+static void ORI() {
+    *CPU->A |= read8(*CPU->PC); \
     cpu_flag_szp(CPU->A); \
 }
 
