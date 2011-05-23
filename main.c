@@ -1,8 +1,6 @@
-// gcc -ggdb -o main cpu.c mmu.c main.c -fomit-frame-pointer -lcurses -DDEBUG_MEM && ./main
-
-#include "Intel8080/cpu.h"
-#include "Intel8080/codes.h"
-#include "Intel8080/names.h"
+#include "Intel8080/Cpu.h"
+#include "Intel8080/Codes.h"
+#include "Intel8080/Names.h"
 
 
 #include <stdlib.h>
@@ -85,8 +83,6 @@ static void emulate() {
                  cycles_per_second = 0,
                  second_time = 0,
                  time_taken = 10;
-
-    unsigned long last_time = now();
 
     for(;;) {
 
