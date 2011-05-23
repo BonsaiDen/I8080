@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/timeb.h>
+#include <sys/time.h>
 
 uint8_t *MEMORY;
 
@@ -29,8 +29,9 @@ static void mmu_write(uint16_t addr, uint8_t val) {
 
 
 static void emulate();
+static void dump(Intel8080 *cpu);
 
-int main(int argc, const char *argv[]) {
+int main() {
 
     // Init memory
     MEMORY = calloc(65536, sizeof(uint8_t));
@@ -67,9 +68,9 @@ int main(int argc, const char *argv[]) {
 
 
 static unsigned long now() {
-    struct timeb tp;
-    ftime(&tp);
-    return tp.millitm + tp.time * 1000;
+    struct timeval t;
+    gettimeofday(&t, NULL);
+    return ((t.tv_sec) * 1000 + t.tv_usec / 1000.0) + 0.5;
 }
 
 
@@ -77,56 +78,59 @@ static void emulate() {
     
     uint16_t top = 65535;
     Intel8080 *cpu = cpu_create(&mmu_read, &mmu_write, &top);
-    // TODO add MMU reference and stuff
 
-    unsigned int clock_speed = 2,
-                 cycles_per_second = 0,
-                 second_time = 0,
-                 time_taken = 10;
+    unsigned int clock = 2;
+    unsigned long last = now(), cycles = 0;
+    int second = 0;
 
+    // This loop tries to achieve a somewhat stable clock frequency
     for(;;) {
 
-        unsigned long start_time = now();
-        cycles_per_second += cpu->exec(cpu, clock_speed * 10000);
+        unsigned long taken = now() - last;
+        last = now();
+        
+        cycles += cpu->exec(cpu, clock * 1000 * taken);
+        usleep(10000);
 
-        // Speed control
-        usleep(10000 - time_taken * 20); // sleep ~10 ms - some other stuff
+        second += taken;
+        if (second >= 1000) {
 
-        time_taken = now() - start_time;
-        second_time += time_taken;
-
-        // Log Mhz every second
-        if (second_time >= 1000) {
-
-            uint8_t flags = *cpu->F;
-            printf("\n  (F) %c %c %c %c %c %c %c %c\n", 
-                        (flags & 128) ? 'S' : '-',
-                        (flags &  64) ? 'Z' : '-',
-                        (flags &  32) ? '0' : ' ',
-                        (flags &  16) ? 'A' : '-',
-                        (flags &   8) ? '0' : ' ',
-                        (flags &   4) ? 'P' : '-',
-                        (flags &   2) ? '1' : ' ',
-                        (flags &   1) ? 'C' : '-' );
-
-            printf("  (A)   %03d (PSW) %05d  (OP)  %-5s\n", *cpu->A, *cpu->PSW, INTEL_8080_OP_CODE_NAMES[cpu->instruction]);
-            printf("  (B)   %03d   (C)   %03d  (BC)  %05d\n", *cpu->B, *cpu->C, *cpu->BC);
-            printf("  (D)   %03d   (E)   %03d  (DE)  %05d\n", *cpu->D, *cpu->E, *cpu->DE);
-            printf("  (H)   %03d   (L)   %03d  (HL)  %05d\n", *cpu->H, *cpu->L, *cpu->HL);
-            printf(" (SP) %05d  (PC) %05d\n", *cpu->SP, *cpu->PC);
-            printf("(CYC) %17lu\n", cpu->cycle_count);
-
-            double cur_clock_speed = (double)cycles_per_second / 1000000;
-            printf("Clocking at %.2f Mhz\n", cur_clock_speed);
-
-            cycles_per_second = 0;
-            second_time -= 1000;
+            printf("Clocking at %.2f Mhz\n\n", (double)cycles / 1000000);
+            dump(cpu);
+            cycles = 0;
+            second -= 1000;
 
         }
 
     }
 
     cpu->destroy(&cpu);
+
+}
+
+static void dump(Intel8080 *cpu) {
+
+    uint8_t flags = *cpu->F;
+    printf("  (F) %c %c %c %c %c\n", 
+                (flags & 128) ? 'S' : '-', (flags &  64) ? 'Z' : '-',
+                (flags &  16) ? 'A' : '-', (flags &   4) ? 'P' : '-',
+                (flags &   1) ? 'C' : '-' );
+
+    printf("  (A)   %03d (PSW) %05d  (OP)  %-5s\n", 
+           *cpu->A, *cpu->PSW, INTEL_8080_OP_CODE_NAMES[cpu->instruction]);
+
+    printf("  (B)   %03d   (C)   %03d  (BC)  %05d\n",
+           *cpu->B, *cpu->C, *cpu->BC);
+
+    printf("  (D)   %03d   (E)   %03d  (DE)  %05d\n",
+           *cpu->D, *cpu->E, *cpu->DE);
+
+    printf("  (H)   %03d   (L)   %03d  (HL)  %05d\n",
+           *cpu->H, *cpu->L, *cpu->HL);
+
+    printf(" (SP) %05d  (PC) %05d\n", *cpu->SP, *cpu->PC);
+    printf("(CYC) %17lu\n\n", cpu->cycle_count);
+//    fputs("\x1b[2J", stdout);
 
 }
 
