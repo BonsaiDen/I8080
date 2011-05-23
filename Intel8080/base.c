@@ -1,52 +1,54 @@
 // Basic Instructions ---------------------------------------------------------
 // ----------------------------------------------------------------------------
-#include "../cpu/8080.h"
-
+#include "cpu.h"
+#include "flags.h"
 
 // Mo Operation
-static void NOP(CPU_8080 *cpu) { }
+static void NOP(Intel8080 *cpu) { 
+    *cpu->PC = *cpu->PC;
+}
 
 // Halt
-static void HLT(CPU_8080 *cpu) { 
+static void HLT(Intel8080 *cpu) { 
     (*cpu->PC)--;
 }
 
 // Reset Flags
-static void DAA(CPU_8080 *cpu) {
+static void DAA(Intel8080 *cpu) {
     (*cpu->F) = 0; // reset flags
 }
 
 // Not A
-static void CMA(CPU_8080 *cpu) {
+static void CMA(Intel8080 *cpu) {
     *cpu->A = ~*cpu->A;
 }
 
 // Set carry
-static void STC(CPU_8080 *cpu) {
+static void STC(Intel8080 *cpu) {
     (*cpu->F) |= 1; // set carry
 }
 
 // Not carry
 // TODO is this correct?
-static void CMC(CPU_8080 *cpu) {
+static void CMC(Intel8080 *cpu) {
     (*cpu->F) ^= 1;
 }
 
 // Input / Output
-static void IN(CPU_8080 *cpu) {
+static void IN(Intel8080 *cpu) {
     // TODO read from stream
 }
 
-static void OUT(CPU_8080 *cpu) {
+static void OUT(Intel8080 *cpu) {
     // TODO write to stream
 }
 
 // Enable / Disable Interupts
-static void EI(CPU_8080 *cpu) {
+static void EI(Intel8080 *cpu) {
     cpu->ime = 1;
 }
 
-static void DI(CPU_8080 *cpu) {
+static void DI(Intel8080 *cpu) {
     cpu->ime = 0;
 }
 

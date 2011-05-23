@@ -1,9 +1,9 @@
-// 8080 OP Code Names ---------------------------------------------------------
+// Intel 8080 OP Code Names ---------------------------------------------------
 // ----------------------------------------------------------------------------
-#ifndef CPU_8080_OP_CODE_NAMES
-#define CPU_8080_OP_CODE_NAMES
+#ifndef INTEL_8080_OP_CODE_NAMES_H
+#define INTEL_8080_OP_CODE_NAMES_H
 
-const char *OP_CODE_NAMES[256] = {
+const char *INTEL_8080_OP_CODE_NAMES[256] = {
 
     // x0 - x7
     "NOP",

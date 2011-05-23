@@ -1,22 +1,34 @@
 // gcc -ggdb -o main cpu.c mmu.c main.c -fomit-frame-pointer -lcurses -DDEBUG_MEM && ./main
 
+#include "Intel8080/cpu.h"
+#include "Intel8080/codes.h"
+#include "Intel8080/names.h"
 
-
-
-#include "cpu/8080.h"
-#include "mmu.h"
-#include "ops/codes.h"
-#include "ops/names.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h>
-
 #include <sys/timeb.h>
 
 uint8_t *MEMORY;
+
+static uint8_t mmu_read(uint16_t addr) {
+    uint16_t val = MEMORY[addr];
+    #ifdef DEBUG_MEM
+        wprintw(mem_win, "  [R 8] (%5d) %3d\n", addr, val);
+    #endif
+    return val;
+}
+
+static void mmu_write(uint16_t addr, uint8_t val) {
+    #ifdef DEBUG_MEM
+        wprintw(mem_win, "  [W 8] (%5d) %3d\n", addr, val);
+    #endif
+    MEMORY[addr] = val;
+}
+
 
 static void emulate();
 
@@ -65,8 +77,8 @@ static unsigned long now() {
 
 static void emulate() {
     
-    CPU_8080 *cpu = cpu_create();
-    *cpu->SP = 65535;
+    uint16_t top = 65535;
+    Intel8080 *cpu = cpu_create(&mmu_read, &mmu_write, &top);
     // TODO add MMU reference and stuff
 
     unsigned int clock_speed = 2,
@@ -79,11 +91,7 @@ static void emulate() {
     for(;;) {
 
         unsigned long start_time = now();
-        unsigned long cycle_end = cpu->cycle_count + clock_speed * 10000;
-        while(cpu->cycle_count < cycle_end) {
-            cpu->fetch(cpu);
-            cycles_per_second += cpu->exec(cpu);
-        }
+        cycles_per_second += cpu->exec(cpu, clock_speed * 10000);
 
         // Speed control
         usleep(10000 - time_taken * 20); // sleep ~10 ms - some other stuff
@@ -105,7 +113,7 @@ static void emulate() {
                         (flags &   2) ? '1' : ' ',
                         (flags &   1) ? 'C' : '-' );
 
-            printf("  (A)   %03d (PSW) %05d  (OP)  %-5s\n", *cpu->A, *cpu->PSW, OP_CODE_NAMES[cpu->instruction]);
+            printf("  (A)   %03d (PSW) %05d  (OP)  %-5s\n", *cpu->A, *cpu->PSW, INTEL_8080_OP_CODE_NAMES[cpu->instruction]);
             printf("  (B)   %03d   (C)   %03d  (BC)  %05d\n", *cpu->B, *cpu->C, *cpu->BC);
             printf("  (D)   %03d   (E)   %03d  (DE)  %05d\n", *cpu->D, *cpu->E, *cpu->DE);
             printf("  (H)   %03d   (L)   %03d  (HL)  %05d\n", *cpu->H, *cpu->L, *cpu->HL);

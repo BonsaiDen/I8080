@@ -1,8 +1,9 @@
-// 8080 OP Code Data Table ----------------------------------------------------
+// Intel 8080 OP Code Data Table ----------------------------------------------
 // ----------------------------------------------------------------------------
-#ifndef CPU_8080_OP_CODE_DATA_H
-#define CPU_8080_OP_CODE_DATA_H
+#ifndef INTEL_8080_OP_CODE_DATA_H
+#define INTEL_8080_OP_CODE_DATA_H
 
+// Include all op codes directly
 #include "base.c"
 #include "acc.c"
 #include "bit.c"
@@ -12,10 +13,11 @@
 #include "stack.c"
 #include "ctrl.c"
 
-typedef void (*OP_CODE_POINTER)(CPU_8080 *cpu);
+// Pointer to OP code functions
+typedef void (*INTEL_8080_OP_CODE)(Intel8080 *cpu);
 
 // Size in Bytes | Cycle Count | Function Address
-unsigned int OP_CODE_DATA[768] = {
+unsigned int INTEL_8080_OP_CODE_DATA[768] = {
 
     // x0 - x7
     1,   4,  (unsigned int)& NOP,

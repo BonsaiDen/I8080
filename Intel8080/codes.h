@@ -1,9 +1,9 @@
-// 8080 OP Code Mnemonics -----------------------------------------------------
+// Intel 8080 OP Code Mnemonics -----------------------------------------------
 // ----------------------------------------------------------------------------
-#ifndef CPU_8080_OP_CODES
-#define CPU_8080_OP_CODES
+#ifndef INTEL_8080_OP_CODES_H
+#define INTEL_8080_OP_CODES_H
 
-enum OP_CODE_MNEMONICS {
+enum INTEL_8080_OP_CODES {
 
     // x0 - x7
     NOP,
