@@ -284,7 +284,7 @@ enum INTEL_8080_OP_CODES {
     RZ,
     RET,
     JZ,
-    JMP_1, // remapped
+    JMP_CB, // remapped
 
     CZ,
     CALL,
@@ -304,12 +304,12 @@ enum INTEL_8080_OP_CODES {
 
     // D8 - Df
     RC,
-    RET_1, // remapped
+    RET_D9, // remapped
     JC,
     IN,
 
     CC,
-    CALL_1, // remapped
+    CALL_DD, // remapped
     SBI,
     RST_3,
 
@@ -331,7 +331,7 @@ enum INTEL_8080_OP_CODES {
     XCHG,
 
     CPE,
-    CALL_2, // remapped
+    CALL_ED, // remapped
     XRI,
     RST_5,
 
@@ -353,7 +353,7 @@ enum INTEL_8080_OP_CODES {
     EI,
 
     CM,
-    CALL_3, // remapped
+    CALL_FD, // remapped
     CPI,
     RST_7
 

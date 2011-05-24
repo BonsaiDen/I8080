@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra
+CFLAGS=-Wall -Wextra -O2 -fomit-frame-pointer
 
 main: main.o Intel8080/Cpu.o
 

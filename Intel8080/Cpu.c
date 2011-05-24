@@ -1,8 +1,8 @@
 // Intel 8080 Emulator --------------------------------------------------------
 // ----------------------------------------------------------------------------
 #include "Cpu.h"
-#include "data.h"
 #include "flags.c"
+#include "table.c"
 
 #include <stdlib.h>
 
@@ -64,21 +64,8 @@ static unsigned long cpu_exec(Intel8080 *cpu, unsigned long cycles) {
         // Fetch instruction and increase PC
         inst = cpu->read_mem((*cpu->PC)++);
 
-        // Set halted state
-        if (inst == 0x76) {
-            cpu->halt = 1;
-        }
-
         // Call op code function
-        (*(INTEL_8080_OP_CODE*)&INTEL_8080_OP_CODE_DATA[inst * 3 + 2])(cpu); 
-        
-        // Increase PC by op size - 1
-        // This is done to reduce amount of code inside instructions
-        *cpu->PC += (INTEL_8080_OP_CODE_DATA[inst * 3] - 1);
-
-        // Add min cycle count
-        // Extra cycles are added inside the specific functions (see ctrl.c)
-        cpu->cycle_count += INTEL_8080_OP_CODE_DATA[inst * 3 + 1];
+        op_code_table(cpu, inst);
         
     }
     
